@@ -85,30 +85,6 @@
 				<action android:name="android.intent.action.LOCKED_BOOT_COMPLETED"/>
 			</intent-filter>
         </receiver>
-
-      <receiver		
-			android:directBootAware="true"
-			android:exported="false"          
-			android:name=".EnableReceiver"/>
-
-      <activity
-          android:name=".InputActivity"
-		  android:directBootAware="true"
-		  android:process=":pr2"
-		  android:label="InputActivity"
-		  android:enabled="false"
-		  android:exported="true"  
-		  android:windowSoftInputMode="stateAlwaysVisible"
-		  android:showWhenLocked="true"
-		  android:turnScreenOn="true"
-		  android:excludeFromRecents="true"
-		  android:launchMode="singleTask">
-            <intent-filter>
-               <action android:name="android.intent.action.MAIN" />
-               <category android:name="android.intent.category.HOME" />
-               <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
 	
 		<activity
 			android:directBootAware="true"
