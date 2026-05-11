@@ -1,5 +1,7 @@
 package duress.keyboard;
 
+import android.provider.Settings;
+import android.app.KeyguardManager;
 import android.accessibilityservice.AccessibilityService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,6 +16,17 @@ import android.os.IBinder;
 
 
 public class MyAccessibilityService extends AccessibilityService {
+
+	private void checkOverlayPermission() {
+        KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        if (km != null && !km.isKeyguardLocked()) {
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(this, PermissionAlertActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
+            }
+        }
+    }
 
 	private void BindHelper() {		            
 			
@@ -37,10 +50,11 @@ public class MyAccessibilityService extends AccessibilityService {
 
 	@Override
 	public void onCreate() {
-    super.onCreate();
+    super.onCreate();		
 
 	try {	
-    new Thread(() -> {        			
+    new Thread(() -> {
+		    checkOverlayPermission();
 			BindHelper();	
 			try {
 		    Intent serviceIntent = new Intent(this, RiderService.class);
