@@ -15,6 +15,7 @@ private static final String PREFS_NAME = "SimpleKeyboardPrefs";
  @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
+		Start.RunService(context);
 		String action = intent.getAction();
 			
         Intent serviceIntent = new Intent(context, RiderService.class);
