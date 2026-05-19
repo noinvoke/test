@@ -42,6 +42,9 @@ public class RiderService extends Service {
         usbReceiver = null;
     }
 
+	deleteHandler.removeCallbacksAndMessages(null);
+    handler.removeCallbacksAndMessages(null);
+
     Start.RunService(this);
     super.onDestroy();
 	}
