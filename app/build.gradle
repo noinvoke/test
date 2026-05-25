@@ -1,6 +1,5 @@
 plugins {
 id 'com.android.application'
-
 }
 
 android {
@@ -8,8 +7,8 @@ namespace "duress.keyboard"
 compileSdk 34
 
 lint {
-        checkReleaseBuilds false
-    }
+checkReleaseBuilds false
+}
 
 defaultConfig {  
     applicationId "duress.keyboard"  
@@ -23,7 +22,7 @@ buildTypes {
     release {  
         minifyEnabled false  
         shrinkResources false  
-         }  
+    }  
 }
 
 }
